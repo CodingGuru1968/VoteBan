@@ -1,0 +1,65 @@
+# General Settings
+
+USE_PREFIX: false # Use a prefix for messages in lang.yml file
+
+
+# Add this to config for new version
+
+VOTE_MUTE:
+   VOTES: 
+     TYPE: 'MIN_VOTES' # This value will either be "MIN_VOTES" or "SERVER_PERCENTAGE"
+     MIN_VOTES: 10 # Minimum votes required to mute the player
+     SERVER_PERCENTAGE: 10 # This value is a percentage based on the number of players online compared to the number of votes
+
+# Command to vote mute players
+
+VOTE_MUTE:
+   ENABLED: true
+   REQUIRES_PERMISSION: true
+   ANNOUNCE_VOTES: false
+   MUTE_CMD: 'mute %player%' # This is the command to execute when a successful vote occurs
+   STOP_CHAT:
+     ENABLED: false # Use this to disable chat while a vote is in progress
+     REQUIRES_PERMISSION: true # Use this to require an additional permission to stop the chat (VOTEBAN.STOPCHAT)
+   INSTANT: false # This means the vote will instantly end once the minimum votes have been reached (rather than continuing until timer ends)
+   COUNTDOWN: 60 # Count down in seconds before a decision is made
+   MIN_VOTES: 10 # Minimum votes required to mute the player
+   BROADCAST_TIMES: # Times in seconds that it will broadcast a message
+   - 60
+   - 30
+   - 10
+
+# Command to vote ban players
+
+VOTE_BAN:
+   ENABLED: true
+   REQUIRES_PERMISSION: true
+   ANNOUNCE_VOTES: false
+   BAN_CMD: 'ban %player% %reason%' # This is the command to execute when a successful vote occurs
+   STOP_CHAT:
+     ENABLED: false # Use this to disable chat while a vote is in progress
+     REQUIRES_PERMISSION: true # Use this to require an additional permission to stop the chat (VOTEBAN.STOPCHAT)
+   INSTANT: false # This means the vote will instantly end once the minimum votes have been reached (rather than continuing until timer ends)
+   COUNTDOWN: 60 # Count down in seconds before a decision is made
+   MIN_VOTES: 10 # Minimum votes required to ban the player
+   BROADCAST_TIMES: # Times in seconds that it will broadcast a message
+   - 60
+   - 30
+   - 10
+
+# Command to vote kick players
+
+VOTE_KICK:
+   ENABLED: true
+   REQUIRES_PERMISSION: true
+   ANNOUNCE_VOTES: false
+   STOP_CHAT:
+     ENABLED: false # Use this to disable chat while a vote is in progress
+     REQUIRES_PERMISSION: true # Use this to require an additional permission to stop the chat (VOTEBAN.STOPCHAT)
+   INSTANT: false # This means the vote will instantly end once the minimum votes have been reached (rather than continuing until timer ends)
+   COUNTDOWN: 60 # Count down in seconds before a decision is made
+   MIN_VOTES: 10 # Minimum votes required to kick the player
+   BROADCAST_TIMES: # Times in seconds that it will broadcast a message
+   - 60
+   - 30
+   - 10

@@ -1,0 +1,14 @@
+name: VoteBan
+version: 1.5.2
+api-version: 1.13
+main: com.codingguru.voteban.VoteBan
+authors: [CodingGuru]
+commands:
+    voteban:
+     description: Start a voteban on a player.
+    votekick:
+     description: Start a votekick on a player.
+    votemute:
+     description: Start a votemute on a player.
+    addvote:
+     description: Add a point towards the current vote.
