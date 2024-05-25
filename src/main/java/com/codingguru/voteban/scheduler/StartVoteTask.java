@@ -20,6 +20,7 @@ public class StartVoteTask extends AsyncThreadUtil {
 	private final String reason;
 	private final VoteType voteType;
 	private List<UUID> playersVoted;
+	private int playersOnline;
 	private int countdown;
 
 	public StartVoteTask(Player player, String reason, VoteType voteType) {
@@ -30,6 +31,7 @@ public class StartVoteTask extends AsyncThreadUtil {
 		this.voteType = voteType;
 		this.playersVoted = Lists.newArrayList();
 		this.countdown = voteType.getCountdown();
+		this.playersOnline = Bukkit.getOnlinePlayers().size();
 
 		if (voteType.isStoppingChat()) {
 			if (!voteType.stopChatRequiresPermission()
@@ -58,7 +60,7 @@ public class StartVoteTask extends AsyncThreadUtil {
 		VoteHandler.getInstance().setChatDisabled(false);
 
 		Bukkit.getScheduler().runTask(VoteBan.getInstance(), () -> {
-			boolean isSuccessful = getVotes() >= getMinimumRequiredVotes();
+			boolean isSuccessful = voteType.getVoteCalculatorType().isSuccessful(voteType, getVotes(), playersOnline);
 
 			if (isSuccessful) {
 				voteType.execute(playerUUID, playerName, reason);

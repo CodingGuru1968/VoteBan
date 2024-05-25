@@ -8,7 +8,7 @@ public class VoteHandler {
 	public VoteHandler() {
 		this.isChatDisabled = false;
 	}
-
+	
 	public void setChatDisabled(boolean isChatDisabled) {
 		this.isChatDisabled = isChatDisabled;
 	}
