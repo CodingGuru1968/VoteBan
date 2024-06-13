@@ -19,12 +19,12 @@ public class VoteKickCmd implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("votekick")) {
-			if (!VoteBan.getInstance().getConfig().getBoolean("VOTE_KICK.ENABLED")) {
+			if (!VoteBan.getInstance().getConfig().getBoolean("vote-kick.enabled")) {
 				MessagesUtil.sendMessage(sender, MessagesUtil.NOT_ENABLED.toString());
 				return false;
 			}
 
-			if (VoteBan.getInstance().getConfig().getBoolean("VOTE_KICK.REQUIRES_PERMISSION")
+			if (VoteBan.getInstance().getConfig().getBoolean("vote-kick.requires-permission")
 					&& !sender.hasPermission("VOTEBAN.*") && !sender.hasPermission("VOTEBAN.STARTKICK")) {
 				MessagesUtil.sendMessage(sender, MessagesUtil.NO_PERMISSION.toString());
 				return false;

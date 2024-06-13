@@ -19,19 +19,9 @@ public class VoteBanCmd implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("voteban")) {
-			if (!VoteBan.getInstance().getConfig().getBoolean("VOTE_BAN.ENABLED")) {
-				MessagesUtil.sendMessage(sender, MessagesUtil.NOT_ENABLED.toString());
-				return false;
-			}
-
-			if (VoteBan.getInstance().getConfig().getBoolean("VOTE_BAN.REQUIRES_PERMISSION")
+			if (VoteBan.getInstance().getConfig().getBoolean("vote-ban.requires-permission")
 					&& !sender.hasPermission("VOTEBAN.*") && !sender.hasPermission("VOTEBAN.STARTBAN")) {
 				MessagesUtil.sendMessage(sender, MessagesUtil.NO_PERMISSION.toString());
-				return false;
-			}
-
-			if (ThreadHandler.getInstance().hasActiveVote()) {
-				MessagesUtil.sendMessage(sender, MessagesUtil.ACTIVE_VOTE.toString());
 				return false;
 			}
 
@@ -41,10 +31,21 @@ public class VoteBanCmd implements CommandExecutor {
 				return false;
 			}
 
+			if (!VoteBan.getInstance().getConfig().getBoolean("vote-ban.enabled")) {
+				MessagesUtil.sendMessage(sender, MessagesUtil.NOT_ENABLED.toString());
+				return false;
+			}
+
+			if (ThreadHandler.getInstance().hasActiveVote()) {
+				MessagesUtil.sendMessage(sender, MessagesUtil.ACTIVE_VOTE.toString());
+				return false;
+			}
+
 			Player target = Bukkit.getPlayer(args[0]);
 
 			if (target == null) {
-				MessagesUtil.sendMessage(sender, MessagesUtil.PLAYER_NOT_FOUND.toString().replaceAll("%player%", args[0]));
+				MessagesUtil.sendMessage(sender,
+						MessagesUtil.PLAYER_NOT_FOUND.toString().replaceAll("%player%", args[0]));
 				return false;
 			}
 
@@ -76,5 +77,5 @@ public class VoteBanCmd implements CommandExecutor {
 		}
 		return false;
 	}
-	
+
 }

@@ -28,5 +28,10 @@ public enum VoteResultCalculatorType {
 	public int calculatePercentage(double obtained, double total) {
 		return (int) Math.round(obtained * 100 / total);
 	}
+	
+	@Override
+	public String toString() {
+		return name().toLowerCase().replaceAll("_", "-");
+	}
 
 }

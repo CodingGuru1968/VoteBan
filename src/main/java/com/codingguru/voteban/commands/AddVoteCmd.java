@@ -3,6 +3,7 @@ package com.codingguru.voteban.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import com.codingguru.voteban.handlers.ThreadHandler;
@@ -14,7 +15,7 @@ public class AddVoteCmd implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("addvote")) {
-			if (sender instanceof org.bukkit.command.ConsoleCommandSender) {
+			if (sender instanceof ConsoleCommandSender) {
 				MessagesUtil.sendMessage(sender, MessagesUtil.IN_GAME_ONLY.toString());
 				return false;
 			}

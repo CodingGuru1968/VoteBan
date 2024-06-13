@@ -5,8 +5,7 @@ import org.bukkit.command.CommandSender;
 import com.codingguru.voteban.VoteBan;
 
 public enum MessagesUtil {
-
-	PREFIX("&8[&cVoteBan&8] ", false),
+	
 	RELOAD("&aYou have successfully reloaded all configuration files.", true),
 
 	FAILED_VOTE_KICK_BROADCAST(
@@ -77,15 +76,7 @@ public enum MessagesUtil {
 
 	@Override
 	public String toString() {
-		boolean usePrefix = false;
-		String prefix = null;
 		String message;
-
-		if (VoteBan.getInstance().getConfig().getBoolean("USE_PREFIX") && this.usePrefix()) {
-			usePrefix = true;
-			prefix = ColorUtil.replace(VoteBan.getInstance().getSettingsManager().getLang()
-					.getString(MessagesUtil.PREFIX.getPath(), "&8[&cVoteBan&8] "));
-		}
 
 		if (VoteBan.getInstance().getSettingsManager().getLang().isSet(this.getPath())) {
 			message = ColorUtil
@@ -94,7 +85,7 @@ public enum MessagesUtil {
 			message = ColorUtil.replace(defaultValue);
 		}
 
-		return usePrefix ? prefix + message : message;
+		return message;
 	}
 
 	public static void sendMessage(CommandSender sender, String replacedString) {

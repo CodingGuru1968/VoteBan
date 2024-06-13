@@ -19,12 +19,12 @@ public class VoteMuteCmd implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("votemute")) {
-			if (!VoteBan.getInstance().getConfig().getBoolean("VOTE_MUTE.ENABLED")) {
+			if (!VoteBan.getInstance().getConfig().getBoolean("vote-mute.enabled")) {
 				MessagesUtil.sendMessage(sender, MessagesUtil.NOT_ENABLED.toString());
 				return false;
 			}
 
-			if (VoteBan.getInstance().getConfig().getBoolean("VOTE_MUTE.REQUIRES_PERMISSION")
+			if (VoteBan.getInstance().getConfig().getBoolean("vote-mute.requires-permission")
 					&& !sender.hasPermission("VOTEBAN.*") && !sender.hasPermission("VOTEBAN.STARTMUTE")) {
 				MessagesUtil.sendMessage(sender, MessagesUtil.NO_PERMISSION.toString());
 				return false;
