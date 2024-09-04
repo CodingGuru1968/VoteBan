@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import com.codingguru.voteban.VoteBan;
 
 public enum MessagesUtil {
-	
+
 	RELOAD("&aYou have successfully reloaded all configuration files.", true),
 
 	FAILED_VOTE_KICK_BROADCAST(
@@ -32,6 +32,8 @@ public enum MessagesUtil {
 	VOTE_ADDED("&e%votedplayer% has voted for %target% to be %type%.", true),
 
 	KICK_MESSAGE("&cYou have been voted to be kicked by players of the server!\nKick Reason: %reason%", false),
+
+	ALREADY_VOTED_FOR("&c%player% recently had a vote started on them so cannot be voted on again.", false),
 
 	CHAT_DISABLED("&cChat is currently disabled because there is a vote in progress.", true),
 	ALREADY_VOTED("&cYou have already voted for this.", true),
@@ -79,8 +81,7 @@ public enum MessagesUtil {
 		String message;
 
 		if (VoteBan.getInstance().getSettingsManager().getLang().isSet(this.getPath())) {
-			message = ColorUtil
-					.replace(VoteBan.getInstance().getSettingsManager().getLang().getString(this.getPath()));
+			message = ColorUtil.replace(VoteBan.getInstance().getSettingsManager().getLang().getString(this.getPath()));
 		} else {
 			message = ColorUtil.replace(defaultValue);
 		}

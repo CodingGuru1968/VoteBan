@@ -2,12 +2,24 @@
 
 check-for-updates: true # Check for new plugin updates
 
+# Already voted for player settings
+# This setting will stop players from spamming the same player multiple times
+# So once voted for and failed, it will not allow you to start another vote on that player
+
+already-voted:
+   enabled: true
+   length: 300 # Length in seconds that they will not allowed to be voted for again
+   # If enabled it will only block that player for the vote that was started (for example it will only block /votemute and not /voteban)
+   # If disabled then that player cannot be voted for with any command once failed (/voteban, /votemute and /votekick)
+   allow-different-votes: false
+   
 # Command to vote ban players
 
 vote-ban:
    enabled: true # Is command enabled
    requires-permission: true # Requires permission to use this command
    announce-votes: false # Announce in chat every time a player votes
+   automatically-add-vote: true # The player that starts the vote, automatically votes
    
    ban-cmd: 'ban %player% %reason%' # This is the command to execute when a successful vote occurs
  
@@ -35,7 +47,8 @@ vote-mute:
    enabled: true # Is command enabled
    requires-permission: true # Requires permission to use this command
    announce-votes: false # Announce in chat every time a player votes
-   
+   automatically-add-vote: true # The player that starts the vote, automatically votes
+
    mute-cmd: 'mute %player%' # This is the command to execute when a successful vote occurs
    
    decision:
@@ -62,7 +75,8 @@ vote-kick:
    enabled: true # Is command enabled
    requires-permission: true # Requires permission to use this command
    announce-votes: false # Announce in chat every time a player votes
-   
+   automatically-add-vote: true # The player that starts the vote, automatically votes
+
    decision:
      instant: false # This means the vote will instantly end once the minimum votes have been reached (rather than continuing until timer ends)
      countdown: 60 # Count down in seconds before a decision is made

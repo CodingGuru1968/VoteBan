@@ -5,15 +5,13 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import com.codingguru.voteban.VoteBan;
-import com.codingguru.voteban.handlers.ThreadHandler;
 import com.codingguru.voteban.handlers.VoteHandler;
-import com.codingguru.voteban.utils.AsyncThreadUtil;
 import com.codingguru.voteban.utils.MessagesUtil;
 import com.google.common.collect.Lists;
 
-public class StartVoteTask extends AsyncThreadUtil {
+public class StartVoteTask extends BukkitRunnable {
 
 	private final UUID playerUUID;
 	private final String playerName;
@@ -23,26 +21,31 @@ public class StartVoteTask extends AsyncThreadUtil {
 	private int playersOnline;
 	private int countdown;
 
-	public StartVoteTask(Player player, String reason, VoteType voteType) {
-		ThreadHandler.getInstance().setActiveVote(this);
+	public StartVoteTask(Player target, Player sender, String reason, VoteType voteType, boolean addVote) {
+		VoteHandler.getInstance().setActiveVote(this);
 		this.reason = reason == null ? MessagesUtil.NO_BAN_REASON.toString() : reason;
-		this.playerUUID = player.getUniqueId();
-		this.playerName = player.getName();
+		this.playerUUID = target.getUniqueId();
+		this.playerName = target.getName();
 		this.voteType = voteType;
 		this.playersVoted = Lists.newArrayList();
 		this.countdown = voteType.getCountdown();
 		this.playersOnline = Bukkit.getOnlinePlayers().size();
+		VoteHandler.getInstance().addAlreadyVotedPlayer(playerUUID, voteType);
 
 		if (voteType.isStoppingChat()) {
 			if (!voteType.stopChatRequiresPermission()
-					|| (player.hasPermission("VOTEBAN.*") || player.hasPermission("VOTEBAN.STOPCHAT"))) {
+					|| (sender.hasPermission("VOTEBAN.*") || sender.hasPermission("VOTEBAN.STOPCHAT"))) {
 				VoteHandler.getInstance().setChatDisabled(true);
 			}
+		}
+		
+		if (addVote) {
+			addVote(sender);
 		}
 	}
 
 	@Override
-	public void runTask() {
+	public void run() {
 		if (isBroadcastingTime(countdown)) {
 			Bukkit.broadcastMessage(voteType.getBroadcastMessage().replaceAll("%player%", playerName)
 					.replaceAll("%timeleft%", countdown + "").replaceAll("%reason%", reason));
@@ -57,18 +60,17 @@ public class StartVoteTask extends AsyncThreadUtil {
 	}
 
 	private void completeTask() {
+		VoteHandler.getInstance().setActiveVote(null);
 		VoteHandler.getInstance().setChatDisabled(false);
 
-		Bukkit.getScheduler().runTask(VoteBan.getInstance(), () -> {
-			boolean isSuccessful = voteType.getVoteCalculatorType().isSuccessful(voteType, getVotes(), playersOnline);
+		boolean isSuccessful = voteType.getVoteCalculatorType().isSuccessful(voteType, getVotes(), playersOnline);
 
-			if (isSuccessful) {
-				voteType.execute(playerUUID, playerName, reason);
-				Bukkit.broadcastMessage(getSuccessfulVoteMessage());
-			} else {
-				Bukkit.broadcastMessage(getFailedVoteMessage());
-			}
-		});
+		if (isSuccessful) {
+			voteType.execute(playerUUID, playerName, reason);
+			Bukkit.broadcastMessage(getSuccessfulVoteMessage());
+		} else {
+			Bukkit.broadcastMessage(getFailedVoteMessage());
+		}
 
 		cancel();
 	}

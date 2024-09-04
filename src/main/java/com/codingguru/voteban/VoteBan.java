@@ -8,6 +8,7 @@ import com.codingguru.voteban.commands.VoteKickCmd;
 import com.codingguru.voteban.commands.VoteMuteCmd;
 import com.codingguru.voteban.listeners.AsyncPlayerChat;
 import com.codingguru.voteban.managers.SettingsManager;
+import com.codingguru.voteban.scheduler.FilterTask;
 import com.codingguru.voteban.utils.ConsoleUtil;
 
 public class VoteBan extends JavaPlugin {
@@ -31,6 +32,9 @@ public class VoteBan extends JavaPlugin {
 		getCommand("addvote").setExecutor(new AddVoteCmd());
 
 		getServer().getPluginManager().registerEvents(new AsyncPlayerChat(), this);
+		
+		FilterTask filterTask = new FilterTask();
+		filterTask.runTaskTimer(VoteBan.getInstance(), 20 * 300, 20 * 300);
 	}
 
 	public SettingsManager getSettingsManager() {

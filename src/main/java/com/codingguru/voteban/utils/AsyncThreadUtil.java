@@ -5,7 +5,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.codingguru.voteban.handlers.ThreadHandler;
+import com.codingguru.voteban.handlers.VoteHandler;
 
 public abstract class AsyncThreadUtil implements Runnable {
 
@@ -52,11 +52,11 @@ public abstract class AsyncThreadUtil implements Runnable {
 	}
 
 	public void cancel() {
+		VoteHandler.getInstance().setActiveVote(null);
 		if (this.executor != null)
 			this.executor.shutdownNow();
 		if (this.task != null)
 			this.task.cancel(true);
-		ThreadHandler.getInstance().setActiveVote(null);
 	}
 
 }

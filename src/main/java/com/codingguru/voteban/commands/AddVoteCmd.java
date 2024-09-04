@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import com.codingguru.voteban.handlers.ThreadHandler;
+import com.codingguru.voteban.handlers.VoteHandler;
 import com.codingguru.voteban.scheduler.StartVoteTask;
 import com.codingguru.voteban.utils.MessagesUtil;
 
@@ -25,13 +25,13 @@ public class AddVoteCmd implements CommandExecutor {
 				return false;
 			}
 
-			if (!ThreadHandler.getInstance().hasActiveVote()) {
+			if (!VoteHandler.getInstance().hasActiveVote()) {
 				MessagesUtil.sendMessage(sender, MessagesUtil.NOT_ACTIVE_VOTE.toString());
 				return false;
 			}
 
 			Player player = (Player) sender;
-			StartVoteTask votingThread = ThreadHandler.getInstance().getActiveVote();
+			StartVoteTask votingThread = VoteHandler.getInstance().getActiveVote();
 
 			if (!votingThread.canVote(player)) {
 				MessagesUtil.sendMessage(sender, MessagesUtil.ALREADY_VOTED.toString());
