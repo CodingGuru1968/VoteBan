@@ -68,7 +68,7 @@ public class VoteMuteCmd implements CommandExecutor {
 
 			if (args.length == 1) {
 				StartVoteTask startVoteTask = new StartVoteTask(target, (Player) sender, null, VoteType.MUTE, addVote);
-				startVoteTask.runTaskTimer(VoteBan.getInstance(), 20, 20);
+				startVoteTask.runTaskAtFixedRate(20);
 				return true;
 			}
 
@@ -79,7 +79,7 @@ public class VoteMuteCmd implements CommandExecutor {
 			}
 
 			StartVoteTask muteTask = new StartVoteTask(target, (Player) sender, reason, VoteType.MUTE, addVote);
-			muteTask.runTaskTimer(VoteBan.getInstance(), 20, 20);
+			muteTask.runTaskAtFixedRate(20);
 		}
 		return false;
 	}

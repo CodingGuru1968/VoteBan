@@ -2,6 +2,12 @@
 
 check-for-updates: true # Check for new plugin updates
 
+# Use mini messages
+# Allows for clickable links, actions and more.
+# https://www.spigotmc.org/threads/minimessage-rich-text-messages-made-easy.433454/
+
+use-mini-message: false
+
 # Already voted for player settings
 # This setting will stop players from spamming the same player multiple times
 # So once voted for and failed, it will not allow you to start another vote on that player
@@ -40,7 +46,7 @@ vote-ban:
    - 60
    - 30
    - 10
-
+   
 # Command to vote mute players
 
 vote-mute:

@@ -1,8 +1,9 @@
 name: VoteBan
-version: 1.8
+version: 1.9
 api-version: 1.13
 main: com.codingguru.voteban.VoteBan
 authors: [CodingGuru]
+folia-supported: true
 commands:
     voteban:
      description: Start a voteban on a player.

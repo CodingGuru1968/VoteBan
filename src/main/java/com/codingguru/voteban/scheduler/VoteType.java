@@ -136,6 +136,7 @@ public enum VoteType {
 		return announcementTimes;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void execute(UUID playerUUID, String playerName, String reason) {
 		switch (this) {
 		case BAN:

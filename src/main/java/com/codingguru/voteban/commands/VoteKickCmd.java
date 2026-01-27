@@ -68,7 +68,7 @@ public class VoteKickCmd implements CommandExecutor {
 
 			if (args.length == 1) {
 				StartVoteTask startVoteTask = new StartVoteTask(target, (Player) sender, null, VoteType.KICK, addVote);
-				startVoteTask.runTaskTimer(VoteBan.getInstance(), 20, 20);
+				startVoteTask.runTaskAtFixedRate(20);
 				return true;
 			}
 
@@ -79,7 +79,7 @@ public class VoteKickCmd implements CommandExecutor {
 			}
 
 			StartVoteTask kickTask = new StartVoteTask(target, (Player) sender, reason, VoteType.KICK, addVote);
-			kickTask.runTaskTimer(VoteBan.getInstance(), 20, 20);
+			kickTask.runTaskAtFixedRate(20);
 		}
 		return false;
 	}

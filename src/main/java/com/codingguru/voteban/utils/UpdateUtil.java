@@ -12,6 +12,7 @@ public class UpdateUtil {
 
 	private final int RESOURCE_ID = 116553;
 
+	@SuppressWarnings("deprecation")
 	public boolean hasNewUpdate() {
 		if (!VoteBan.getInstance().getConfig().getBoolean("check-for-updates", true)) {
 			return false;

@@ -5,13 +5,12 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.codingguru.voteban.handlers.VoteHandler;
 import com.codingguru.voteban.utils.MessagesUtil;
 import com.google.common.collect.Lists;
 
-public class StartVoteTask extends BukkitRunnable {
+public class StartVoteTask extends Schedule {
 
 	private final UUID playerUUID;
 	private final String playerName;
@@ -38,7 +37,7 @@ public class StartVoteTask extends BukkitRunnable {
 				VoteHandler.getInstance().setChatDisabled(true);
 			}
 		}
-		
+
 		if (addVote) {
 			addVote(sender);
 		}
@@ -47,7 +46,7 @@ public class StartVoteTask extends BukkitRunnable {
 	@Override
 	public void run() {
 		if (isBroadcastingTime(countdown)) {
-			Bukkit.broadcastMessage(voteType.getBroadcastMessage().replaceAll("%player%", playerName)
+			MessagesUtil.broadcast(voteType.getBroadcastMessage().replaceAll("%player%", playerName)
 					.replaceAll("%timeleft%", countdown + "").replaceAll("%reason%", reason));
 		}
 
@@ -67,9 +66,9 @@ public class StartVoteTask extends BukkitRunnable {
 
 		if (isSuccessful) {
 			voteType.execute(playerUUID, playerName, reason);
-			Bukkit.broadcastMessage(getSuccessfulVoteMessage());
+			MessagesUtil.broadcast(getSuccessfulVoteMessage());
 		} else {
-			Bukkit.broadcastMessage(getFailedVoteMessage());
+			MessagesUtil.broadcast(getFailedVoteMessage());
 		}
 
 		cancel();
@@ -113,7 +112,7 @@ public class StartVoteTask extends BukkitRunnable {
 		MessagesUtil.sendMessage(sender, MessagesUtil.SUCCESSFUL_VOTE.toString().replaceAll("%player%", playerName));
 
 		if (voteType.isAnnouncingVotes()) {
-			Bukkit.broadcastMessage(MessagesUtil.VOTE_ADDED.toString().replaceAll("%votedplayer%", sender.getName())
+			MessagesUtil.broadcast(MessagesUtil.VOTE_ADDED.toString().replaceAll("%votedplayer%", sender.getName())
 					.replaceAll("%target%", playerName).replaceAll("%type%", voteType.toString()));
 		}
 

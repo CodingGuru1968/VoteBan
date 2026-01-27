@@ -31,6 +31,7 @@ public class AddVoteCmd implements CommandExecutor {
 			}
 
 			Player player = (Player) sender;
+			
 			StartVoteTask votingThread = VoteHandler.getInstance().getActiveVote();
 
 			if (!votingThread.canVote(player)) {

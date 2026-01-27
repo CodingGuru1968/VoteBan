@@ -1,8 +1,13 @@
 package com.codingguru.voteban.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import com.codingguru.voteban.VoteBan;
+
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public enum MessagesUtil {
 
@@ -81,21 +86,41 @@ public enum MessagesUtil {
 		String message;
 
 		if (VoteBan.getInstance().getSettingsManager().getLang().isSet(this.getPath())) {
-			message = ColorUtil.replace(VoteBan.getInstance().getSettingsManager().getLang().getString(this.getPath()));
+			message = VoteBan.getInstance().getSettingsManager().getLang().getString(this.getPath());
 		} else {
-			message = ColorUtil.replace(defaultValue);
+			message = defaultValue;
+		}
+
+		if (!VoteBan.getInstance().getConfig().getBoolean("use-mini-message")) {
+			message = ColorUtil.replace(message);
 		}
 
 		return message;
 	}
 
-	public static void sendMessage(CommandSender sender, String replacedString) {
-		if (replacedString.equalsIgnoreCase(""))
+	public static void broadcast(String message) {
+		Bukkit.getOnlinePlayers().stream().forEach(player -> sendMessage(player, message));
+	}
+
+	public static void sendMiniMessage(CommandSender sender, String message) {
+		Audience audience = VoteBan.getInstance().getAdventure().sender(sender);
+		MiniMessage mm = MiniMessage.miniMessage();
+		Component replacedMessage = mm.deserialize(message);
+		audience.sendMessage(replacedMessage);
+	}
+
+	public static void sendMessage(CommandSender sender, String message) {
+		if (message.equalsIgnoreCase(""))
 			return;
 
-		String[] message = replacedString.split("\\\\n");
+		if (VoteBan.getInstance().getConfig().getBoolean("use-mini-message")) {
+			sendMiniMessage(sender, message);
+			return;
+		}
 
-		for (String msg : message) {
+		String[] multimessage = message.split("\\\\n");
+
+		for (String msg : multimessage) {
 			sender.sendMessage(msg.replace("\\n", ""));
 		}
 	}

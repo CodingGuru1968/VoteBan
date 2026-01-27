@@ -1,10 +1,8 @@
 package com.codingguru.voteban.scheduler;
 
-import org.bukkit.scheduler.BukkitRunnable;
-
 import com.codingguru.voteban.handlers.VoteHandler;
 
-public class FilterTask extends BukkitRunnable {
+public class FilterTask extends Schedule {
 
 	@Override
 	public void run() {
