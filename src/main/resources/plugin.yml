@@ -1,15 +1,17 @@
 name: VoteBan
-version: 1.9
+version: 2.0.1
 api-version: 1.13
 main: com.codingguru.voteban.VoteBan
 authors: [CodingGuru]
 folia-supported: true
 commands:
-    voteban:
-     description: Start a voteban on a player.
-    votekick:
-     description: Start a votekick on a player.
-    votemute:
-     description: Start a votemute on a player.
-    addvote:
-     description: Add a point towards the current vote.
+  votereload:
+    description: Reload configuration files.
+  voteban:
+    description: Start a voteban on a player.
+  votekick:
+    description: Start a votekick on a player.
+  votemute:
+    description: Start a votemute on a player.
+  addvote:
+    description: Add a point towards the current vote.
