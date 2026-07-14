@@ -1,5 +1,8 @@
 package com.codingguru.voteban;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.codingguru.voteban.commands.AddVoteCmd;
@@ -12,6 +15,7 @@ import com.codingguru.voteban.managers.SettingsManager;
 import com.codingguru.voteban.scheduler.FilterTask;
 import com.codingguru.voteban.utils.ConsoleUtil;
 import com.codingguru.voteban.utils.ServerTypeUtil;
+import com.tchristofferson.configupdater.ConfigUpdater;
 
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 
@@ -31,11 +35,19 @@ public class VoteBan extends JavaPlugin {
 		ConsoleUtil.sendPluginSetup();
 
 		saveDefaultConfig();
+		
+		try {
+			ConfigUpdater.update(this, "config.yml", new File(getDataFolder(), "config.yml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		reloadConfig();
 
 		settingsManager = new SettingsManager();
 		settingsManager.setup(this);
 
-		if (getConfig().getBoolean("use-mini-message")) {
+		if (getConfig().getBoolean("use-mini-message", false)) {
 			this.adventureAPI = BukkitAudiences.create(this);
 		}
 
