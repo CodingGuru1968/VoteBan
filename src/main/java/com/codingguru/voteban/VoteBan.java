@@ -10,21 +10,18 @@ import com.codingguru.voteban.commands.VoteBanCmd;
 import com.codingguru.voteban.commands.VoteKickCmd;
 import com.codingguru.voteban.commands.VoteMuteCmd;
 import com.codingguru.voteban.commands.VoteReloadCmd;
+import com.codingguru.voteban.handlers.ManagerHandler;
 import com.codingguru.voteban.listeners.AsyncPlayerChat;
-import com.codingguru.voteban.managers.SettingsManager;
+import com.codingguru.voteban.managers.LanguageManager;
 import com.codingguru.voteban.scheduler.FilterTask;
-import com.codingguru.voteban.utils.ConsoleUtil;
-import com.codingguru.voteban.utils.ServerTypeUtil;
+import com.codingguru.voteban.util.ConsoleUtil;
+import com.codingguru.voteban.util.ServerTypeUtil;
 import com.tchristofferson.configupdater.ConfigUpdater;
-
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 
 public class VoteBan extends JavaPlugin {
 
 	private static VoteBan INSTANCE;
-	private SettingsManager settingsManager;
 	private ServerTypeUtil serverType;
-	private BukkitAudiences adventureAPI;
 
 	@Override
 	public void onEnable() {
@@ -43,24 +40,39 @@ public class VoteBan extends JavaPlugin {
 		}
 
 		reloadConfig();
+		
+		registerManagers();
+		
+		ManagerHandler.getInstance().startAll();
 
-		settingsManager = new SettingsManager();
-		settingsManager.setup(this);
+		registerHooksAndListeners();
 
-		if (getConfig().getBoolean("use-mini-message", false)) {
-			this.adventureAPI = BukkitAudiences.create(this);
-		}
-
-		getCommand("voteban").setExecutor(new VoteBanCmd());
-		getCommand("votekick").setExecutor(new VoteKickCmd());
-		getCommand("votemute").setExecutor(new VoteMuteCmd());
-		getCommand("addvote").setExecutor(new AddVoteCmd());
-		getCommand("votereload").setExecutor(new VoteReloadCmd());
-
-		getServer().getPluginManager().registerEvents(new AsyncPlayerChat(), this);
-
-		FilterTask filterTask = new FilterTask();
+		FilterTask filterTask = new FilterTask(this);
 		filterTask.runTaskAtFixedRate(20 * 300);
+	}
+	
+	public void onDisable() {
+		ManagerHandler.getInstance().stopAll();
+	}
+
+	public void reload() {
+		ManagerHandler.getInstance().stopAll();
+		reloadConfig();
+		ManagerHandler.getInstance().startAll();
+	}
+	
+	private void registerHooksAndListeners() {
+		getCommand("voteban").setExecutor(new VoteBanCmd(this));
+		getCommand("votekick").setExecutor(new VoteKickCmd(this));
+		getCommand("votemute").setExecutor(new VoteMuteCmd(this));
+		getCommand("votereload").setExecutor(new VoteReloadCmd(this));
+		getCommand("addvote").setExecutor(new AddVoteCmd());
+		getServer().getPluginManager().registerEvents(new AsyncPlayerChat(), this);
+	}
+	
+	private void registerManagers() {
+		ManagerHandler managerRegistry = ManagerHandler.getInstance();
+		managerRegistry.register(LanguageManager.class, new LanguageManager(this));
 	}
 
 	private void setupServerType() {
@@ -83,14 +95,6 @@ public class VoteBan extends JavaPlugin {
 
 	public ServerTypeUtil getServerType() {
 		return serverType;
-	}
-
-	public BukkitAudiences getAdventure() {
-		return this.adventureAPI;
-	}
-
-	public SettingsManager getSettingsManager() {
-		return settingsManager;
 	}
 
 	public static VoteBan getInstance() {

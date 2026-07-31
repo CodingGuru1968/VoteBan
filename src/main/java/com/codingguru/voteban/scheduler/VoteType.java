@@ -7,43 +7,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.codingguru.voteban.VoteBan;
-import com.codingguru.voteban.utils.ConsoleUtil;
-import com.codingguru.voteban.utils.MessagesUtil;
+import com.codingguru.voteban.util.ConsoleUtil;
+import com.codingguru.voteban.util.LangDefaults;
+import com.codingguru.voteban.util.MessageBuilder;
 
 public enum VoteType {
 
-	BAN(
-			"banned", MessagesUtil.SUCCESSFUL_VOTE_BAN_BROADCAST.toString(),
-			MessagesUtil.FAILED_VOTE_BAN_BROADCAST.toString(), MessagesUtil.VOTE_BAN_BROADCAST.toString(),
-			VoteBan.getInstance().getConfig().getInt("vote-ban.decision.countdown"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-ban.decision.instant"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-ban.announce-votes"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-ban.stop-chat.enabled"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-ban.stop-chat.requires-permission"),
-			VoteBan.getInstance().getConfig().getIntegerList("vote-ban.broadcast-times")),
-	MUTE(
-			"muted", MessagesUtil.SUCCESSFUL_VOTE_MUTE_BROADCAST.toString(),
-			MessagesUtil.FAILED_VOTE_MUTE_BROADCAST.toString(), MessagesUtil.VOTE_MUTE_BROADCAST.toString(),
-			VoteBan.getInstance().getConfig().getInt("vote-mute.decision.countdown"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-mute.decision.instant"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-mute.announce-votes"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-mute.stop-chat.enabled"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-mute.stop-chat.requires-permission"),
-			VoteBan.getInstance().getConfig().getIntegerList("vote-mute.broadcast-times")),
-	KICK(
-			"kicked", MessagesUtil.SUCCESSFUL_VOTE_KICK_BROADCAST.toString(),
-			MessagesUtil.FAILED_VOTE_KICK_BROADCAST.toString(), MessagesUtil.VOTE_KICK_BROADCAST.toString(),
-			VoteBan.getInstance().getConfig().getInt("vote-kick.decision.countdown"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-kick.decision.instant"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-kick.announce-votes"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-kick.stop-chat.enabled"),
-			VoteBan.getInstance().getConfig().getBoolean("vote-kick.stop-chat.requires-permission"),
-			VoteBan.getInstance().getConfig().getIntegerList("vote-kick.broadcast-times"));
+	BAN("banned", "successful-vote-ban-broadcast", "failed-vote-ban-broadcast", "vote-ban-broadcast"),
+	MUTE("muted", "successful-vote-mute-broadcast", "failed-vote-mute-broadcast", "vote-mute-broadcast"),
+	KICK("kicked", "successful-vote-kick-broadcast", "failed-vote-kick-broadcast", "vote-kick-broadcast");
 
 	private final String niceName;
-	private final String successfulVoteMessage;
-	private final String failedVoteMessage;
-	private final String broadcastMessage;
+	private final String successfulMessagePath;
+	private final String failedMessagePath;
+	private final String broadcastMessagePath;
+
 	private final VoteResultCalculatorType voteCalculatorType;
 	private final List<Integer> announcementTimes;
 	private final int minVotes;
@@ -53,26 +31,28 @@ public enum VoteType {
 	private final boolean stopChat;
 	private final boolean stopChatRequiresPermission;
 
-	VoteType(String niceName, String successfulVoteMessage, String failedVoteMessage, String broadcastMessage,
-			int countdown, boolean isInstant, boolean announceVotes, boolean stopChat,
-			boolean stopChatRequiresPermission, List<Integer> announcementTimes) {
+	VoteType(String niceName, String successfulMessagePath, String failedMessagePath, String broadcastMessagePath) {
 		this.niceName = niceName;
-		this.successfulVoteMessage = successfulVoteMessage;
-		this.failedVoteMessage = failedVoteMessage;
-		this.broadcastMessage = broadcastMessage;
-		this.countdown = countdown;
-		this.isInstant = isInstant;
-		this.announceVotes = announceVotes;
-		this.stopChat = stopChat;
-		this.stopChatRequiresPermission = stopChatRequiresPermission;
-		this.voteCalculatorType = getVoteCalculatorType(name().toLowerCase());
-		this.minVotes = getMinVotes(name().toLowerCase());
-		this.announcementTimes = announcementTimes;
+		this.successfulMessagePath = successfulMessagePath;
+		this.failedMessagePath = failedMessagePath;
+		this.broadcastMessagePath = broadcastMessagePath;
+		String configKey = name().toLowerCase();
+		VoteBan plugin = VoteBan.getInstance();
+		this.countdown = plugin.getConfig().getInt("vote-" + configKey + ".decision.countdown");
+		this.isInstant = plugin.getConfig().getBoolean("vote-" + configKey + ".decision.instant");
+		this.announceVotes = plugin.getConfig().getBoolean("vote-" + configKey + ".announce-votes");
+		this.stopChat = plugin.getConfig().getBoolean("vote-" + configKey + ".stop-chat.enabled");
+		this.stopChatRequiresPermission = plugin.getConfig()
+				.getBoolean("vote-" + configKey + ".stop-chat.requires-permission");
+		this.announcementTimes = plugin.getConfig().getIntegerList("vote-" + configKey + ".broadcast-times");
+		this.voteCalculatorType = getVoteCalculatorType(configKey);
+		this.minVotes = getMinVotes(configKey);
 	}
 
 	private int getMinVotes(String name) {
-		if (VoteBan.getInstance().getConfig().isSet("vote-" + name + ".votes." + voteCalculatorType.toString())) {
-			return VoteBan.getInstance().getConfig().getInt("vote-" + name + ".votes." + voteCalculatorType.toString());
+		VoteBan plugin = VoteBan.getInstance();
+		if (plugin.getConfig().isSet("vote-" + name + ".votes." + voteCalculatorType.toString())) {
+			return plugin.getConfig().getInt("vote-" + name + ".votes." + voteCalculatorType.toString());
 		}
 		ConsoleUtil.warning(
 				"Could not find an amount of votes needed to execute command in the config. Defaulting to 10...");
@@ -80,9 +60,10 @@ public enum VoteType {
 	}
 
 	private VoteResultCalculatorType getVoteCalculatorType(String name) {
-		if (VoteBan.getInstance().getConfig().isSet("vote-" + name + ".votes.type")) {
+		VoteBan plugin = VoteBan.getInstance();
+		if (plugin.getConfig().isSet("vote-" + name + ".votes.type")) {
 			return VoteResultCalculatorType
-					.getVoteCalculatorType(VoteBan.getInstance().getConfig().getString("vote-" + name + ".votes.type"));
+					.getVoteCalculatorType(plugin.getConfig().getString("vote-" + name + ".votes.type"));
 		}
 		ConsoleUtil.warning("Could not find a vote type calculation type in the config. Defaulting to MIN_VOTES...");
 		return VoteResultCalculatorType.MIN_VOTES;
@@ -92,16 +73,16 @@ public enum VoteType {
 		return voteCalculatorType;
 	}
 
-	public String getBroadcastMessage() {
-		return broadcastMessage;
+	public String getBroadcastMessagePath() {
+		return broadcastMessagePath;
 	}
 
-	public String getSuccessfulVoteMessage() {
-		return successfulVoteMessage;
+	public String getSuccessfulMessagePath() {
+		return successfulMessagePath;
 	}
 
-	public String getFailedVoteMessage() {
-		return failedVoteMessage;
+	public String getFailedMessagePath() {
+		return failedMessagePath;
 	}
 
 	public int getMinVotes() {
@@ -150,7 +131,9 @@ public enum VoteType {
 			if (player == null)
 				return;
 
-			player.kickPlayer(MessagesUtil.KICK_MESSAGE.toString().replaceAll("%reason%", reason));
+			String kickMessage = new MessageBuilder.Builder("kick-message", LangDefaults.KICK_MESSAGE)
+					.set("%reason%", reason).buildString();
+			player.kickPlayer(kickMessage);
 			break;
 		case MUTE:
 			String muteCommand = VoteBan.getInstance().getConfig().getString("vote-mute.mute-cmd")

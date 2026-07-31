@@ -8,24 +8,25 @@ import org.bukkit.entity.Player;
 
 import com.codingguru.voteban.handlers.VoteHandler;
 import com.codingguru.voteban.scheduler.StartVoteTask;
-import com.codingguru.voteban.utils.MessagesUtil;
+import com.codingguru.voteban.util.LangDefaults;
+import com.codingguru.voteban.util.MessageBuilder;
 
 public class AddVoteCmd implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {		
 		if (sender instanceof ConsoleCommandSender) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.IN_GAME_ONLY.toString());
+			new MessageBuilder.Builder("in-game-only", LangDefaults.IN_GAME_ONLY).send(sender);
 			return false;
 		}
 
-		if (!sender.hasPermission("VOTEBAN.*") && !sender.hasPermission("VOTEBAN.VOTE")) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.NO_PERMISSION.toString());
+		if (!sender.hasPermission("voteban.*") && !sender.hasPermission("voteban.vote")) {
+			new MessageBuilder.Builder("no-permission", LangDefaults.NO_PERMISSION).send(sender);
 			return false;
 		}
 
 		if (!VoteHandler.getInstance().hasActiveVote()) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.NOT_ACTIVE_VOTE.toString());
+			new MessageBuilder.Builder("not-active-vote", LangDefaults.NOT_ACTIVE_VOTE).send(sender);
 			return false;
 		}
 
@@ -34,7 +35,7 @@ public class AddVoteCmd implements CommandExecutor {
 		StartVoteTask votingThread = VoteHandler.getInstance().getActiveVote();
 
 		if (!votingThread.canVote(player)) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.ALREADY_VOTED.toString());
+			new MessageBuilder.Builder("already-voted", LangDefaults.ALREADY_VOTED).send(sender);
 			return false;
 		}
 

@@ -10,61 +10,71 @@ import com.codingguru.voteban.VoteBan;
 import com.codingguru.voteban.handlers.VoteHandler;
 import com.codingguru.voteban.scheduler.StartVoteTask;
 import com.codingguru.voteban.scheduler.VoteType;
-import com.codingguru.voteban.utils.MessagesUtil;
+import com.codingguru.voteban.util.LangDefaults;
+import com.codingguru.voteban.util.MessageBuilder;
 
 public class VoteBanCmd implements CommandExecutor {
 
+	private final VoteBan plugin;
+
+	public VoteBanCmd(VoteBan plugin) {
+		this.plugin = plugin;
+	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (VoteBan.getInstance().getConfig().getBoolean("vote-ban.requires-permission")
-				&& !sender.hasPermission("VOTEBAN.*") && !sender.hasPermission("VOTEBAN.STARTBAN")) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.NO_PERMISSION.toString());
+		if (plugin.getConfig().getBoolean("vote-ban.requires-permission") && !sender.hasPermission("voteban.*")
+				&& !sender.hasPermission("voteban.startban")) {
+			new MessageBuilder.Builder("no-permission", LangDefaults.NO_PERMISSION).send(sender);
 			return false;
 		}
 
-		if (args.length == 0) {
-			MessagesUtil.sendMessage(sender,
-					MessagesUtil.INCORRECT_USAGE.toString().replaceAll("%command%", "/voteban <player> [reason]"));
-			return false;
-		}
-
-		if (!VoteBan.getInstance().getConfig().getBoolean("vote-ban.enabled")) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.NOT_ENABLED.toString());
+		if (!plugin.getConfig().getBoolean("vote-ban.enabled")) {
+			new MessageBuilder.Builder("not-enabled", LangDefaults.NOT_ENABLED).send(sender);
 			return false;
 		}
 
 		if (VoteHandler.getInstance().hasActiveVote()) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.ACTIVE_VOTE.toString());
+			new MessageBuilder.Builder("active-vote", LangDefaults.ACTIVE_VOTE).send(sender);
+			return false;
+		}
+
+		if (args.length == 0) {
+			new MessageBuilder.Builder("incorrect-usage", LangDefaults.INCORRECT_USAGE)
+					.set("%command%", "/voteban <player> [reason]").send(sender);
 			return false;
 		}
 
 		Player target = Bukkit.getPlayer(args[0]);
 
 		if (target == null) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.PLAYER_NOT_FOUND.toString().replaceAll("%player%", args[0]));
+			new MessageBuilder.Builder("player-not-found", LangDefaults.PLAYER_NOT_FOUND).set("%player%", args[0])
+					.send(sender);
 			return false;
 		}
 
 		if (sender instanceof Player && sender.getName().equalsIgnoreCase(target.getName())) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.CANNOT_EXECUTE_YOURSELF.toString());
+			new MessageBuilder.Builder("cannot-execute-yourself", LangDefaults.CANNOT_EXECUTE_YOURSELF).send(sender);
 			return false;
 		}
 
-		if (target.hasPermission("VOTEBAN.*") || target.hasPermission("VOTEBAN.BYPASS")) {
-			MessagesUtil.sendMessage(sender,
-					MessagesUtil.CANNOT_EXECUTE_THIS_PLAYER.toString().replaceAll("%player%", args[0]));
+		if (target.hasPermission("voteban.*") || target.hasPermission("voteban.bypass")) {
+			new MessageBuilder.Builder("cannot-execute-this-player", LangDefaults.CANNOT_EXECUTE_THIS_PLAYER)
+					.set("%player%", args[0]).send(sender);
 			return false;
 		}
 
 		if (!VoteHandler.getInstance().isVoteAllowed(VoteType.BAN, target.getUniqueId())) {
-			MessagesUtil.sendMessage(sender, MessagesUtil.ALREADY_VOTED_FOR.toString().replace("%player%", args[0]));
+			new MessageBuilder.Builder("already-voted-for", LangDefaults.ALREADY_VOTED_FOR).set("%player%", args[0])
+					.send(sender);
 			return false;
 		}
 
-		boolean addVote = VoteBan.getInstance().getConfig().getBoolean("vote-ban.automatically-add-vote");
+		boolean addVote = plugin.getConfig().getBoolean("vote-ban.automatically-add-vote");
 
 		if (args.length == 1) {
-			StartVoteTask startVoteTask = new StartVoteTask(target, (Player) sender, null, VoteType.BAN, addVote);
+			StartVoteTask startVoteTask = new StartVoteTask(plugin, target, (Player) sender, null, VoteType.BAN,
+					addVote);
 			startVoteTask.runTaskAtFixedRate(20);
 			return true;
 		}
@@ -75,7 +85,7 @@ public class VoteBanCmd implements CommandExecutor {
 			reason = String.valueOf(reason) + args[i] + " ";
 		}
 
-		StartVoteTask banTask = new StartVoteTask(target, (Player) sender, reason, VoteType.BAN, addVote);
+		StartVoteTask banTask = new StartVoteTask(plugin, target, (Player) sender, reason, VoteType.BAN, addVote);
 		banTask.runTaskAtFixedRate(20);
 		return false;
 	}

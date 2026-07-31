@@ -5,22 +5,24 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.codingguru.voteban.VoteBan;
-import com.codingguru.voteban.obj.VotedDetails;
+import com.codingguru.voteban.model.VotedDetails;
 import com.codingguru.voteban.scheduler.StartVoteTask;
 import com.codingguru.voteban.scheduler.VoteType;
 import com.google.common.collect.Maps;
 
 public class VoteHandler {
 
-	private final static VoteHandler INSTANCE = new VoteHandler();
-	private boolean isChatDisabled;
-	private Map<UUID, VotedDetails> alreadyVotedPlayers;
-	private StartVoteTask activeVote;
-
-	public VoteHandler() {
+	private VoteHandler() {
+		this.plugin = VoteBan.getInstance();
 		this.isChatDisabled = false;
 		this.alreadyVotedPlayers = Maps.newHashMap();
 	}
+	
+	private final static VoteHandler INSTANCE = new VoteHandler();
+	private final VoteBan plugin;
+	private boolean isChatDisabled;
+	private Map<UUID, VotedDetails> alreadyVotedPlayers;
+	private StartVoteTask activeVote;
 
 	public void setActiveVote(StartVoteTask activeVote) {
 		this.activeVote = activeVote;
@@ -45,7 +47,7 @@ public class VoteHandler {
 	}
 
 	public boolean isVoteAllowed(VoteType voteType, UUID uuid) {
-		if (!VoteBan.getInstance().getConfig().getBoolean("already-voted.enabled"))
+		if (!plugin.getConfig().getBoolean("already-voted.enabled"))
 			return true;
 
 		if (alreadyVotedPlayers.containsKey(uuid)) {
@@ -56,7 +58,7 @@ public class VoteHandler {
 				return true;
 			}
 
-			if (!VoteBan.getInstance().getConfig().getBoolean("already-voted.allow-different-votes"))
+			if (!plugin.getConfig().getBoolean("already-voted.allow-different-votes"))
 				return false;
 
 			if (voteType == votedDetails.getVoteType())
@@ -71,10 +73,10 @@ public class VoteHandler {
 	}
 
 	public void addAlreadyVotedPlayer(UUID uuid, VoteType type) {
-		if (!VoteBan.getInstance().getConfig().getBoolean("already-voted.enabled"))
+		if (!plugin.getConfig().getBoolean("already-voted.enabled"))
 			return;
 
-		long timeAdded = VoteBan.getInstance().getConfig().getInt("already-voted.length") * 1000;
+		long timeAdded = plugin.getConfig().getInt("already-voted.length") * 1000;
 		long endTime = System.currentTimeMillis() + timeAdded;
 		VotedDetails votedDetails = new VotedDetails(endTime, type);
 		this.alreadyVotedPlayers.put(uuid, votedDetails);

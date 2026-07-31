@@ -1,24 +1,53 @@
-# General Settings
+######################################################################
+# +----------------------------------------------------------------+ #
+# |                                                                | #
+# |   ,--.   ,--.       ,--.         ,-----.                       | #
+# |    \  `.'  /,---. ,-'  '-. ,---. |  |) /_  ,--,--.,--,--,      | #
+# |     \     /| .-. |'-.  .-'| .-. :|  .-.  \' ,-.  ||      \     | #
+# |      \   / ' '-' '  |  |  \   --.|  '--' /\ '-'  ||  ||  |     | #
+# |       `-'   `---'   `--'   `----'`------'  `--`--'`--''--'     | #
+# |                                                                | #
+# |                                                                | #
+# | WIKI:    https://codingguru1968.gitbook.io/voteban-wiki        | #
+# | DISCORD: https://discord.gg/Rqmngywv57                         | #
+# |                                                                | #
+# +----------------------------------------------------------------+ #
+######################################################################
 
-check-for-updates: true # Check for new plugin updates
+# +----------------------------------------------------------------------------------------------+ #
+# | GENERAL SETTINGS                                                                             | #
+# +----------------------------------------------------------------------------------------------+ #
 
-# Use mini messages
-# Allows for clickable links, actions and more.
+# Check for new plugin updates
+check-for-updates: true 
+
+# Set the language file to use from the 'lang' folder
+# English = en, French = fr, Spanish = es, German = de, Russian = ru
+language: "en"
+
+# Use mini messages (Allows for clickable links, actions and more)
 use-mini-message: false
+
+# +----------------------------------------------------------------------------------------------+ #
+# | VOTE SETTINGS & COOLDOWNS                                                                    | #
+# +----------------------------------------------------------------------------------------------+ #
 
 # Already voted for player settings
 # This setting will stop players from spamming the same player multiple times
 # So once voted for and failed, it will not allow you to start another vote on that player
-
 already-voted:
    enabled: true
    length: 300 # Length in seconds that they will not allowed to be voted for again
    # If enabled it will only block that player for the vote that was started (for example it will only block /votemute and not /voteban)
    # If disabled then that player cannot be voted for with any command once failed (/voteban, /votemute and /votekick)
    allow-different-votes: false
-   
-# Command to vote ban players
 
+
+# +----------------------------------------------------------------------------------------------+ #
+# | VOTE BAN COMMAND                                                                             | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# Command to vote ban players
 vote-ban:
    enabled: true # Is command enabled
    requires-permission: true # Requires permission to use this command
@@ -44,9 +73,13 @@ vote-ban:
    - 60
    - 30
    - 10
-   
-# Command to vote mute players
 
+
+# +----------------------------------------------------------------------------------------------+ #
+# | VOTE MUTE COMMAND                                                                            | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# Command to vote mute players
 vote-mute:
    enabled: true # Is command enabled
    requires-permission: true # Requires permission to use this command
@@ -72,9 +105,13 @@ vote-mute:
    - 60
    - 30
    - 10
-   
-# Command to vote kick players
 
+
+# +----------------------------------------------------------------------------------------------+ #
+# | VOTE KICK COMMAND                                                                            | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# Command to vote kick players
 vote-kick:
    enabled: true # Is command enabled
    requires-permission: true # Requires permission to use this command
